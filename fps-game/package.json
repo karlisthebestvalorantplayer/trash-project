@@ -1,0 +1,25 @@
+{
+  "name": "valorant-fps-game",
+  "version": "1.0.0",
+  "description": "A blazing fast, aesthetic browser-based FPS game with zero recoil and aurora skies",
+  "main": "index.html",
+  "type": "module",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "serve": "npx http-server -p 8000 -o"
+  },
+  "keywords": [
+    "fps",
+    "game",
+    "valorant",
+    "three.js",
+    "web-game",
+    "browser-game"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {
+    "three": "^r128"
+  }
+}

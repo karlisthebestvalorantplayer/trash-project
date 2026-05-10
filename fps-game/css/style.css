@@ -1,0 +1,270 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #000;
+    font-family: 'Arial', sans-serif;
+    color: #fff;
+}
+
+#canvas-container {
+    width: 100%;
+    height: 100%;
+}
+
+canvas {
+    display: block;
+}
+
+/* HUD Styling */
+#hud {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.hud-element {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid #00d4ff;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    text-shadow: 0 0 10px #00d4ff;
+}
+
+/* Crosshair */
+.crosshair {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    border-radius: 50%;
+    background: #00ff00;
+    box-shadow: 0 0 10px #00ff00;
+    transition: transform 0.1s ease-out;
+}
+
+/* Ammo Display */
+#ammo-display {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    font-size: 24px;
+    font-weight: bold;
+    background: transparent;
+    border: none;
+    padding: 0;
+    text-shadow: 0 0 20px #00ffff;
+}
+
+#ammo-count {
+    color: #00ffff;
+    font-size: 32px;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+#ammo-reserve {
+    color: #00ffff;
+    font-size: 16px;
+    opacity: 0.7;
+}
+
+/* Weapon Display */
+#weapon-display {
+    bottom: 150px;
+    right: 50px;
+    flex-direction: column;
+    display: flex;
+    gap: 5px;
+}
+
+#weapon-name {
+    color: #ff6b9d;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+#weapon-damage {
+    color: #ff3333;
+    font-weight: bold;
+}
+
+/* Health Bar */
+#health-bar {
+    bottom: 50px;
+    left: 50px;
+    width: 200px;
+    height: 30px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #ff3333;
+}
+
+#health-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00ff00, #ffff00, #ff3333);
+    border-radius: 3px;
+    transition: width 0.2s ease-out;
+    box-shadow: 0 0 20px #00ff00;
+}
+
+/* FPS Counter */
+#fps-counter {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #00d4ff;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    text-shadow: 0 0 10px #00d4ff;
+}
+
+/* Score and Accuracy Displays */
+#score-display {
+    position: absolute;
+    top: 70px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #ffaa00;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    text-shadow: 0 0 10px #ffaa00;
+    color: #ffaa00;
+}
+
+#accuracy-display {
+    position: absolute;
+    top: 120px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #00ff00;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    text-shadow: 0 0 10px #00ff00;
+    color: #00ff00;
+}
+
+/* Recoil Indicator */
+.recoil-indicator {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 2px solid rgba(255, 0, 0, 0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.1s;
+}
+
+.recoil-indicator.active {
+    opacity: 1;
+    animation: recoilPulse 0.3s ease-out;
+}
+
+@keyframes recoilPulse {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        box-shadow: 0 0 20px #ff3333;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.5);
+        box-shadow: 0 0 5px #ff3333;
+    }
+}
+
+@keyframes hitFlash {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Weapon Skin Selection UI */
+.weapon-skin-selector {
+    position: fixed;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    border: 2px solid #00d4ff;
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;
+    gap: 10px;
+    z-index: 20;
+}
+
+.skin-button {
+    padding: 10px 15px;
+    background: rgba(0, 212, 255, 0.3);
+    border: 2px solid #00d4ff;
+    color: #00d4ff;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s;
+    font-weight: bold;
+}
+
+.skin-button:hover {
+    background: rgba(0, 212, 255, 0.6);
+    box-shadow: 0 0 20px #00d4ff;
+}
+
+.skin-button.active {
+    background: #00d4ff;
+    color: #000;
+    box-shadow: 0 0 30px #00d4ff;
+}
+
+/* Loading Screen */
+.loading-screen {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.loading-text {
+    font-size: 24px;
+    color: #00d4ff;
+    text-shadow: 0 0 20px #00d4ff;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
