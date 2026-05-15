@@ -10,7 +10,8 @@ const GameConfig = {
         sprintSpeed: 14,        // Units per second
         jumpForce: 8,           // Jump strength
         gravity: 20,            // Gravity strength
-        mouseSensitivity: 0.003 // Camera sensitivity (0.001 - 0.01)
+        mouseSensitivity: 0.003, // Camera sensitivity (0.001 - 0.01)
+        botStrafeSpeed: 4       // Default target strafing speed
     },
 
     // Weapon Settings
@@ -72,7 +73,8 @@ const GameConfig = {
         showFPS: true,
         showRecoilIndicator: true,
         showCrosshair: true,
-        weaponDisplayVisible: true
+        weaponDisplayVisible: true,
+        showDot: true
     },
 
     // Audio Settings

@@ -23,7 +23,9 @@ class GameEngine {
         this.bullets = [];
         this.targets = [];
         this.particles = [];
-        this.botStrafeSpeed = 4; // Default strafe speed setting
+        this.weaponView = null;
+        this.currentWeaponObject = null;
+        this.botStrafeSpeed = GameConfig.player.botStrafeSpeed || 4; // Default strafe speed setting
         
         // Target stats
         this.score = 0;
@@ -60,6 +62,9 @@ class GameEngine {
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFShadowShadowMap;
         
+        // Add camera to scene
+        this.scene.add(this.camera);
+
         const container = document.getElementById('canvas-container');
         container.appendChild(this.renderer.domElement);
 
@@ -68,6 +73,8 @@ class GameEngine {
         this.setupEventListeners();
         this.createEnvironment();
         this.createCrosshair();
+        this.createSettingsUI();
+        this.attachWeaponView();
 
         // Start game loop
         this.animate();
@@ -79,6 +86,7 @@ class GameEngine {
     initializeSystems() {
         // Create player
         this.player = new Player(this.scene, this.camera);
+        this.player.sensitivity = GameConfig.player.mouseSensitivity;
 
         // Create weapon system
         this.weaponSystem = new WeaponSystem();
@@ -90,32 +98,36 @@ class GameEngine {
     }
 
     /**
-     * Create a glowing 3D crosshair attached to the camera
+     * Create a centered blue glowing plus crosshair above all layers
      */
     createCrosshair() {
-        const crosshairGroup = new THREE.Group();
-        
-        const material = new THREE.MeshBasicMaterial({ 
-            color: 0x00ffff,
-            transparent: true,
-            opacity: 0.9,
-            depthTest: false // Ensure it's always visible on top
-        });
-        
-        // Horizontal bar
-        const hGeom = new THREE.PlaneGeometry(0.05, 0.005);
-        const hLine = new THREE.Mesh(hGeom, material);
-        
-        // Vertical bar
-        const vGeom = new THREE.PlaneGeometry(0.005, 0.05);
-        const vLine = new THREE.Mesh(vGeom, material);
-        
-        crosshairGroup.add(hLine);
-        crosshairGroup.add(vLine);
-        
-        // Position in front of camera
-        crosshairGroup.position.z = -1; 
-        this.camera.add(crosshairGroup);
+        // Only create one blue glowing plus crosshair and place it above all UI layers.
+        if (!document.getElementById('crosshair')) {
+            const crosshair = document.createElement('div');
+            crosshair.id = 'crosshair';
+            crosshair.textContent = '+';
+
+            Object.assign(crosshair.style, {
+                position: 'fixed',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                pointerEvents: 'none',
+                zIndex: '9999',
+                color: '#82c8ff',
+                fontSize: '42px',
+                fontWeight: '900',
+                lineHeight: '1',
+                textAlign: 'center',
+                textShadow: '0 0 18px rgba(130, 200, 255, 0.9), 0 0 36px rgba(130, 200, 255, 0.5), 0 0 54px rgba(130, 200, 255, 0.25)',
+                userSelect: 'none',
+                WebkitUserSelect: 'none',
+                MozUserSelect: 'none',
+                transition: 'transform 0.1s ease-out'
+            });
+
+            document.body.appendChild(crosshair);
+        }
     }
     /**
      * Create game environment
@@ -411,10 +423,35 @@ class GameEngine {
     switchWeaponAnimated(weaponName) {
         if (!this.weaponSystem.switchWeapon(weaponName)) return;
 
-        const armsGroup = this.player.getArmsGroup();
-        if (!armsGroup) return;
-
+        this.updateWeaponView();
         this.updateHUD();
+    }
+
+    /**
+     * Attach the current weapon mesh to the camera view
+     */
+    attachWeaponView() {
+        if (!this.weaponSystem || !this.camera) return;
+        if (this.currentWeaponObject) {
+            this.camera.remove(this.currentWeaponObject);
+            this.currentWeaponObject = null;
+        }
+
+        const weaponMesh = this.weaponSystem.currentWeapon?.mesh;
+        if (!weaponMesh) return;
+
+        weaponMesh.position.set(0.18, -0.22, -0.5);
+        weaponMesh.rotation.set(0, Math.PI, 0);
+        weaponMesh.scale.set(1, 1, 1);
+        this.camera.add(weaponMesh);
+        this.currentWeaponObject = weaponMesh;
+    }
+
+    /**
+     * Update the displayed weapon when switching
+     */
+    updateWeaponView() {
+        this.attachWeaponView();
     }
 
     /**
@@ -589,23 +626,7 @@ class GameEngine {
      * Create muzzle flash effect at camera
      */
     createMuzzleFlash() {
-        // Add a bright flash at camera
-        const flashGeometry = new THREE.PlaneGeometry(2, 2);
-        const flashMaterial = new THREE.MeshBasicMaterial({
-            color: 0xffff00,
-            transparent: true,
-            opacity: 0.9
-        });
-        const flash = new THREE.Mesh(flashGeometry, flashMaterial);
-        flash.position.z = -2;
-        this.camera.add(flash);
-
-        // Fade out muzzle flash
-        setTimeout(() => {
-            this.camera.remove(flash);
-        }, 50);
-
-        // Show recoil indicator (though recoil is 0)
+        // Removed the yellow shooting flash effect; keep recoil indicator only.
         const recoilIndicator = document.getElementById('recoil-indicator');
         if (recoilIndicator) {
             recoilIndicator.classList.add('active');
@@ -789,6 +810,79 @@ class GameEngine {
         // Update ammo display only
         document.getElementById('ammo-count').textContent = stats.ammo.split('/')[0];
         document.getElementById('ammo-reserve').textContent = '/ ' + stats.ammo.split('/')[1];
+    }
+
+    /**
+     * Create settings UI overlay and attach events
+     */
+    createSettingsUI() {
+        const settingsButton = document.getElementById('settings-button');
+        const settingsPanel = document.getElementById('settings-panel');
+        const closeButton = document.getElementById('settings-close');
+        const saveButton = document.getElementById('settings-save');
+        const cancelButton = document.getElementById('settings-cancel');
+        const strafeInput = document.getElementById('strafe-speed-input');
+        const sensitivityInput = document.getElementById('camera-sensitivity-input');
+
+        if (!settingsPanel || !settingsButton || !strafeInput || !sensitivityInput) return;
+
+        const updateValueLabels = () => {
+            document.getElementById('strafe-speed-value').textContent = parseFloat(strafeInput.value).toFixed(1);
+            document.getElementById('camera-sensitivity-value').textContent = parseFloat(sensitivityInput.value).toFixed(4);
+        };
+
+        strafeInput.value = this.botStrafeSpeed;
+        sensitivityInput.value = this.player.sensitivity;
+        updateValueLabels();
+
+        const openSettings = () => {
+            strafeInput.value = this.botStrafeSpeed;
+            sensitivityInput.value = this.player.sensitivity;
+            updateValueLabels();
+            settingsPanel.classList.remove('hidden');
+        };
+
+        const closeSettings = () => {
+            settingsPanel.classList.add('hidden');
+        };
+
+        settingsButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            openSettings();
+        });
+
+        closeButton.addEventListener('click', closeSettings);
+        cancelButton.addEventListener('click', closeSettings);
+        settingsPanel.addEventListener('click', (event) => {
+            if (event.target === settingsPanel) {
+                closeSettings();
+            }
+        });
+
+        strafeInput.addEventListener('input', updateValueLabels);
+        sensitivityInput.addEventListener('input', updateValueLabels);
+
+        saveButton.addEventListener('click', () => {
+            this.botStrafeSpeed = parseFloat(strafeInput.value);
+            GameConfig.player.botStrafeSpeed = this.botStrafeSpeed;
+            this.player.sensitivity = parseFloat(sensitivityInput.value);
+            GameConfig.player.mouseSensitivity = this.player.sensitivity;
+            this.targets.forEach(target => {
+                if (typeof target.strafeSpeed !== 'undefined') {
+                    target.strafeSpeed = this.botStrafeSpeed;
+                }
+            });
+            closeSettings();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'p') {
+                openSettings();
+            }
+            if (e.key === 'Escape') {
+                closeSettings();
+            }
+        });
     }
 
     /**

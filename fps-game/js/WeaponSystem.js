@@ -131,27 +131,74 @@ class WeaponSystem {
 
         this.weapons.vandal.mesh = vandalGroup;
 
-        // Phantom mesh
+        // Phantom mesh (Assault Rifle view model)
         const phantomGroup = new THREE.Group();
         const phantomBody = new THREE.Mesh(
-            new THREE.BoxGeometry(0.22, 0.12, 0.85),
+            new THREE.BoxGeometry(0.28, 0.12, 0.8),
             this.getSkinMaterial('Phantom', 'RGX')
         );
-        phantomBody.position.set(0.3, -0.2, -1.5);
+        phantomBody.position.set(0.35, -0.25, -1.2);
         phantomGroup.add(phantomBody);
 
-        const phantomScope = new THREE.Mesh(
-            new THREE.BoxGeometry(0.18, 0.1, 0.35),
-            new THREE.MeshStandardMaterial({
-                color: 0x00ffff,
-                metalness: 0.7,
-                roughness: 0.3,
-                emissive: 0x00ffff,
-                emissiveIntensity: 0.4
-            })
+        const phantomStock = new THREE.Mesh(
+            new THREE.BoxGeometry(0.14, 0.1, 0.5),
+            new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.8, roughness: 0.35 })
         );
-        phantomScope.position.set(0.3, 0.05, -1.2);
-        phantomGroup.add(phantomScope);
+        phantomStock.position.set(-0.04, -0.28, -0.7);
+        phantomGroup.add(phantomStock);
+
+        const phantomGrip = new THREE.Mesh(
+            new THREE.BoxGeometry(0.06, 0.18, 0.12),
+            new THREE.MeshStandardMaterial({ color: 0x121212, metalness: 0.7, roughness: 0.4 })
+        );
+        phantomGrip.position.set(0.18, -0.45, -0.95);
+        phantomGrip.rotation.x = Math.PI / 10;
+        phantomGroup.add(phantomGrip);
+
+        const phantomMagazine = new THREE.Mesh(
+            new THREE.BoxGeometry(0.08, 0.22, 0.28),
+            new THREE.MeshStandardMaterial({ color: 0x1f1f1f, metalness: 0.8, roughness: 0.4 })
+        );
+        phantomMagazine.position.set(0.08, -0.35, -1.05);
+        phantomMagazine.rotation.x = -Math.PI / 12;
+        phantomGroup.add(phantomMagazine);
+
+        const phantomHandguard = new THREE.Mesh(
+            new THREE.BoxGeometry(0.12, 0.1, 0.45),
+            new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.8, roughness: 0.3 })
+        );
+        phantomHandguard.position.set(0.35, -0.15, -0.84);
+        phantomGroup.add(phantomHandguard);
+
+        const phantomBarrel = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.035, 0.035, 0.7, 12),
+            new THREE.MeshStandardMaterial({ color: 0x202020, metalness: 0.9, roughness: 0.2 })
+        );
+        phantomBarrel.position.set(0.35, -0.16, -0.25);
+        phantomBarrel.rotation.x = Math.PI / 2;
+        phantomGroup.add(phantomBarrel);
+
+        const phantomMuzzle = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.05, 0.05, 0.1, 12),
+            new THREE.MeshStandardMaterial({ color: 0x444444, metalness: 0.95, roughness: 0.15 })
+        );
+        phantomMuzzle.position.set(0.35, -0.16, 0.15);
+        phantomMuzzle.rotation.x = Math.PI / 2;
+        phantomGroup.add(phantomMuzzle);
+
+        const phantomSight = new THREE.Mesh(
+            new THREE.BoxGeometry(0.14, 0.06, 0.22),
+            new THREE.MeshStandardMaterial({ color: 0x00ffff, metalness: 0.9, roughness: 0.1, emissive: 0x00ffff, emissiveIntensity: 0.25 })
+        );
+        phantomSight.position.set(0.35, -0.08, -0.65);
+        phantomGroup.add(phantomSight);
+
+        const phantomDetail = new THREE.Mesh(
+            new THREE.BoxGeometry(0.02, 0.08, 0.32),
+            new THREE.MeshStandardMaterial({ color: 0x444444, metalness: 0.8, roughness: 0.25 })
+        );
+        phantomDetail.position.set(0.35, -0.1, -0.98);
+        phantomGroup.add(phantomDetail);
 
         this.weapons.phantom.mesh = phantomGroup;
 

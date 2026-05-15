@@ -15,16 +15,46 @@
             <span id="ammo-count">30</span>
             <span id="ammo-reserve">/ 120</span>
         </div>
-        
-        <div id="crosshair" class="crosshair"></div>
     </div>
 
-    <!-- Scripts -->
+    <div id="settings-ui">
+        <button id="settings-button" class="hud-button">Settings</button>
+    </div>
+
+    <div id="settings-panel" class="settings-panel hidden" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+        <div class="settings-card">
+            <div class="settings-card-header">
+                <h2 id="settings-title">Game Settings</h2>
+                <button id="settings-close" class="settings-close" aria-label="Close settings">×</button>
+            </div>
+            <div class="settings-row">
+                <label for="strafe-speed-input">Bot Strafe Speed</label>
+                <div class="settings-input-row">
+                    <input id="strafe-speed-input" type="range" min="1" max="12" step="0.1">
+                    <span id="strafe-speed-value"></span>
+                </div>
+            </div>
+            <div class="settings-row">
+                <label for="camera-sensitivity-input">Camera Sensitivity</label>
+                <div class="settings-input-row">
+                    <input id="camera-sensitivity-input" type="range" min="0.001" max="0.01" step="0.0005">
+                    <span id="camera-sensitivity-value"></span>
+                </div>
+            </div>
+            <div class="settings-actions">
+                <button id="settings-save" class="settings-save">Save</button>
+                <button id="settings-cancel" class="settings-cancel">Cancel</button>
+            </div>
+            <p class="settings-hint">Press <strong>Esc</strong> to close.</p>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="js/AuroraGenerator.js"></script>
     <script src="js/WeaponSystem.js"></script>
     <script src="js/Player.js"></script>
     <script src="js/Target.js"></script>
+    <script src="js/config.js"></script>
     <script src="js/GameEngine.js"></script>
 </body>
 </html>
